@@ -53,7 +53,9 @@ The "WmOps - All in One" extension combines all of the above extensions into a s
 ![Wmcore Microservices](./WebOps/webops.gif)
 
 
-## Installation 
+## Installation
+
+### Chrome / Firefox Extensions
 
 You can either install each extension individually, or you can install all of them at once combined.
 
@@ -65,10 +67,53 @@ You can either install each extension individually, or you can install all of th
     - If you want to install each extension individually, then just select the folder of the extension you want to install from the extensions folder. i.e 'dimas-page', 'jira-search', etc.
 5. The extensions should now appear in you extensions page.
 
+### Tampermonkey Userscripts
+
+All of the above extensions are also available as [Tampermonkey](https://www.tampermonkey.net/) userscripts. This lets you use the same functionality without installing a browser extension — Tampermonkey works in Chrome, Firefox, Edge, and Safari.
+
+#### How it works
+
+When you select text on any webpage, a small floating popup appears near your cursor listing all available CMS actions. Click an action to open the corresponding page in a new tab with the selected text inserted automatically. Press **Escape** or click anywhere outside the popup to dismiss it.
+
+#### Installation
+
+1. Install the [Tampermonkey browser extension](https://www.tampermonkey.net/) if you have not already.
+2. Clone this repository (or download the zip).
+3. Open the Tampermonkey dashboard and click **Utilities → Install from file**, then select one of the scripts from the `tampermonkey/` folder:
+
+| Script | What it opens |
+|--------|--------------|
+| `CMS-OC-WebOps.user.js` | **All-in-One** – all shortcuts in a single script, with a configurable shortcut manager |
+| `dimas-page.user.js` | Dima's CMS production monitor |
+| `ReqMgr2.user.js` | ReqMgr2 request page |
+| `unified.user.js` | Unified Error Report and Unified Logs |
+| `rucio.user.js` | Rucio Web UI search |
+| `jira-search.user.js` | Jira issue search (CMSPROD / CMSCOMPPR) |
+| `wmcore-microservices.user.js` | MS Pileup and MS Transferor |
+| `pdmv.user.js` | pMp PdmV historical page |
+| `das.user.js` | CMS Data Aggregation System (DAS) |
+| `reqmgr_campaignconfig.user.js` | ReqMgr2 campaign configuration |
+
+> **Tip:** Install only `CMS-OC-WebOps.user.js` to get all shortcuts in one place.
+
+#### Managing shortcuts (All-in-One script)
+
+The combined `CMS-OC-WebOps.user.js` script supports adding, editing, and deleting shortcuts, just like the WebOps Chrome extension options page:
+
+1. Click the Tampermonkey icon in your browser toolbar.
+2. Select **CMS-OC WebOps - All in One → Manage Shortcuts**.
+3. Add, edit, or remove shortcuts and click **Save**.
+
+Use `{text}` anywhere in a URL as a placeholder for the selected text (it will be URL-encoded automatically).
+
 
 ## Chrome Extension Generator
 
 The utility, `create_new_extension.py`, is designed to automate the creation of new Chrome extensions. It will generate the necessary JavaScript code for the extension, a `manifest.json` file, and will also copy an `icon.png` from a specified source folder.
+
+## Tampermonkey Userscript Generator
+
+The utility, `generate_tampermonkey.py`, generates a single-action Tampermonkey userscript for any CMS WebOps shortcut.
 
 ## Prerequisites
 
@@ -77,6 +122,8 @@ The utility, `create_new_extension.py`, is designed to automate the creation of 
 
 ## Usage
 
+### Chrome Extension Generator
+
 Run the script using the following command:
 
     python ./utils/create_new_extension.py [extension_folder] [extension_name] [base_url]
@@ -84,6 +131,22 @@ Run the script using the following command:
 - extension_folder: The name of the folder where the extension files will be saved.
 - extension_name: The name of the extension (also used as the context menu title).
 - base_url: The base URL to open with the selected text.
+
+### Tampermonkey Userscript Generator
+
+Run the script using the following command:
+
+    python ./utils/generate_tampermonkey.py [script_name] [title] [base_url]
+
+- script_name: The file name for the userscript (without `.user.js` extension).
+- title: The human-readable label shown on the popup button.
+- base_url: The URL to open, using `{text}` as the placeholder for the selected text.
+
+Example:
+
+    python ./utils/generate_tampermonkey.py my-tool "Open My Tool" "https://example.com/search?q={text}"
+
+The generated `.user.js` file is saved to the `tampermonkey/` folder.
 
 ## Suggestions and Contributions
 
