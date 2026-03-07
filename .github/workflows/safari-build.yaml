@@ -1,4 +1,4 @@
-name: Safari Build
+name: Browser Builds
 
 on:
   push:
@@ -9,6 +9,63 @@ on:
       - master
 
 jobs:
+  chromium-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package Chromium extensions
+        run: |
+          mkdir -p chromium_packages
+          PACKAGES_DIR=$(pwd)/chromium_packages
+          for ext_dir in extensions/*/; do
+            ext_name=$(basename "$ext_dir")
+            (cd "$ext_dir" && zip -r "${PACKAGES_DIR}/${ext_name}_chromium.zip" .)
+          done
+
+      - name: Upload Chromium extension packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: chromium-extensions
+          path: chromium_packages/*.zip
+          if-no-files-found: error
+
+  firefox-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Install web-ext
+        run: npm install -g web-ext
+
+      - name: Build Firefox extensions
+        run: |
+          mkdir -p firefox_packages
+          for ext_dir in firefox/*_firefox/; do
+            ext_name=$(basename "$ext_dir")
+            web-ext build \
+              --source-dir "$ext_dir" \
+              --artifacts-dir firefox_packages \
+              --filename "${ext_name}.zip" \
+              --overwrite-dest
+          done
+
+      - name: Upload Firefox extension packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-extensions
+          path: firefox_packages/*.zip
+          if-no-files-found: error
+
   safari-build:
     runs-on: macos-latest
     permissions:
